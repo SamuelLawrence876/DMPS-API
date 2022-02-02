@@ -22,6 +22,17 @@ recordRoutes.route("/record").get(function (req, res) {
       res.json(result);
     });
 });
+// This section will help you get a list of all the admins
+recordRoutes.route("/admin").get(function (req, res) {
+  let db_connect = dbo.getDb("employees");
+  db_connect
+    .collection("adminemails")
+    .find({})
+    .toArray(function (err, result) {
+      if (err) throw err;
+      res.json(result);
+    });
+});
 
 // This section will help you get a single record by id
 recordRoutes.route("/record/:id").get(function (req, res) {
@@ -45,6 +56,7 @@ recordRoutes.route("/record/add").post(function (req, response) {
     amount: req.body.amount,
   };
   db_connect.collection("records").insertOne(myobj, function (err, res) {
+    console.log(myobj);
     if (err) throw err;
     response.json(res);
   });
