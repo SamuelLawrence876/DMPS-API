@@ -8,6 +8,16 @@ app.use(express.json());
 app.use(require("./routes/record"));
 // get driver connection
 const dbo = require("./db/conn");
+const Db = process.env.ATLAS_URI;
+const mongooose = require("mongoose");
+
+mongooose.connect(
+  Db,
+  () => {
+    console.log("mongoose connected");
+  },
+  (e) => console.log(e)
+);
 
 app.listen(port, () => {
   // perform a database connection when server starts
