@@ -14,6 +14,7 @@ const bodyParser = require("body-parser");
 const stripe = require("stripe")(
   "sk_test_51KUeHwIziYistER0nhmIolZovsBbsJeBxY4rocHCoD5h9uuDW8aretS3q7DWwjpwmOrZGswnWL0u4pSBR0obghZZ000jd7ryPC"
 );
+const adminRoutes = require("./routes/admin");
 
 app.use(express.static("public"));
 app.use(express.json());
@@ -24,6 +25,8 @@ const calculateOrderAmount = (items) => {
   // people from directly manipulating the amount on the client
   return 75700;
 };
+
+app.use(adminRoutes);
 
 app.post("/create-payment-intent", async (req, res) => {
   const { items } = req.body;
