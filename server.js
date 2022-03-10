@@ -10,14 +10,35 @@ app.use(require("./routes/record"));
 const dbo = require("./db/conn");
 const Db = process.env.ATLAS_URI;
 const mongooose = require("mongoose");
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 const stripe = require("stripe")(
   "sk_test_51KUeHwIziYistER0nhmIolZovsBbsJeBxY4rocHCoD5h9uuDW8aretS3q7DWwjpwmOrZGswnWL0u4pSBR0obghZZ000jd7ryPC"
 );
 const adminRoutes = require("./routes/admin");
+const errorHandler = require("./middleware/errorHandler");
+const verifyJWT = require("./middleware/verifyJWT");
+const cookieParser = require("cookie-parser");
+const credentials = require("./middleware/credentials");
+const corsOptions = require("./config/corsOptions");
 
+app.use(credentials);
+app.use(cors(corsOptions));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
 app.use(express.json());
+app.use(express.json());
+
+//middleware for cookies
+app.use(cookieParser());
+app.use("/", require("./routes/root"));
+app.use("/register", require("./routes/register"));
+app.use("/auth", require("./routes/auth"));
+app.use("/refresh", require("./routes/refresh"));
+app.use("/logout", require("./routes/logout"));
+
+app.use(verifyJWT);
+app.use("/employees", require("./routes/api/employees"));
+app.use("/users", require("./routes/api/users"));
 
 const calculateOrderAmount = (items) => {
   // Replace this constant with a calculation of the order's amount
@@ -45,6 +66,8 @@ app.post("/create-payment-intent", async (req, res) => {
   });
   console.log("Payment Made");
 });
+
+app.use(errorHandler);
 
 mongooose.connect(
   Db,
