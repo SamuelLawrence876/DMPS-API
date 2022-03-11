@@ -9,7 +9,7 @@ app.use(require("./routes/record"));
 // get driver connection
 const dbo = require("./db/conn");
 const Db = process.env.ATLAS_URI;
-const mongooose = require("mongoose");
+const mongoose = require("mongoose");
 // const bodyParser = require("body-parser");
 const stripe = require("stripe")(
   "sk_test_51KUeHwIziYistER0nhmIolZovsBbsJeBxY4rocHCoD5h9uuDW8aretS3q7DWwjpwmOrZGswnWL0u4pSBR0obghZZ000jd7ryPC"
@@ -20,7 +20,9 @@ const verifyJWT = require("./middleware/verifyJWT");
 const cookieParser = require("cookie-parser");
 const credentials = require("./middleware/credentials");
 const corsOptions = require("./config/corsOptions");
+const connectDB = require("./config/dbConn");
 
+connectDB();
 app.use(credentials);
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
@@ -39,6 +41,17 @@ app.use("/logout", require("./routes/logout"));
 app.use(verifyJWT);
 app.use("/employees", require("./routes/api/employees"));
 app.use("/users", require("./routes/api/users"));
+
+app.all("*", (req, res) => {
+  res.status(404);
+  if (req.accepts("html")) {
+    res.sendFile(path.join(__dirname, "views", "404.html"));
+  } else if (req.accepts("json")) {
+    res.json({ error: "404 Not Found" });
+  } else {
+    res.type("txt").send("404 Not Found");
+  }
+});
 
 const calculateOrderAmount = (items) => {
   // Replace this constant with a calculation of the order's amount
@@ -69,18 +82,28 @@ app.post("/create-payment-intent", async (req, res) => {
 
 app.use(errorHandler);
 
-mongooose.connect(
-  Db,
-  () => {
-    console.log("mongoose connected");
-  },
-  (e) => console.log(e)
-);
+// mongooose.connect(
+//   Db,
+//   () => {
+//     console.log("mongoose connected");
+//   },
+//   (e) => console.log(e)
+// );
 
-app.listen(port, () => {
+mongoose.connection.once("open", () => {
+  console.log(`Successfully connected to Mongoose.`);
   // perform a database connection when server starts
+  // migrate to mongoose
   dbo.connectToServer(function (err) {
     if (err) console.error(err);
   });
-  console.log(`Server is running on port: ${port}`);
+  app.listen(port, () => console.log(`Server running on port ${port}`));
 });
+
+// app.listen(port, () => {
+//   // perform a database connection when server starts
+//   dbo.connectToServer(function (err) {
+//     if (err) console.error(err);
+//   });
+//   console.log(`Server is running on port: ${port}`);
+// });
