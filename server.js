@@ -1,13 +1,32 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const bodyParser = require("body-parser");
+const { auth } = require("express-oauth2-jwt-bearer");
+const adminRouter = require("./routes/admin/adminRoutes");
+const port = process.env.PORT || 5000;
+require("dotenv").config({ path: "./config.env" });
+
 // cors
 app.use(cors());
 app.use(express.json());
+app.use(bodyParser.json());
+
+app.use("/api/admin/", adminRouter);
+
+// jwtCheck
+// const checkJwt = auth({
+//   audience: "dmpsuser",
+//   issuerBaseURL: `https://dev-ouzw7myp.us.auth0.com/`,
+// });
+
+// app.use(checkJwt);
+
+// app.get("/authorized", function (req, res) {
+//   res.send("Secured Resource");
+// });
 
 // config
-require("dotenv").config({ path: "./config.env" });
-const port = process.env.PORT || 5000;
 
 // get driver connection
 const dbo = require("./db/conn");
