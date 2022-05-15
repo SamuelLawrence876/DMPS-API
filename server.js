@@ -8,19 +8,11 @@ const port = process.env.PORT || 5000;
 require("dotenv").config({ path: "./config.env" });
 
 // cors
+
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
-
 app.use("/api/admin/", adminRouter);
-
-// jwtCheck
-// const checkJwt = auth({
-//   audience: "dmpsuser",
-//   issuerBaseURL: `https://dev-ouzw7myp.us.auth0.com/`,
-// });
-
-// app.use(checkJwt);
 
 // app.get("/authorized", function (req, res) {
 //   res.send("Secured Resource");
