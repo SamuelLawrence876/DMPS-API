@@ -15,7 +15,7 @@ router.get("/", checkJwt, checkScopes, adminController.getAllAdmins);
 
 router.get("/:adminId", checkJwt, checkScopes, adminController.getOneAdmin);
 
-router.post("/", adminController.createNewAdmin);
+router.post("/", checkJwt, adminController.createNewAdmin);
 
 router.patch(
   "/:adminId",
