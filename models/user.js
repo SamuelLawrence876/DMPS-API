@@ -38,6 +38,11 @@ const userSchema = new mongoose.Schema({
     immutable: true,
     default: Date.now(),
   },
+  userType: {
+    type: String,
+    immutable: true,
+    default: "user",
+  },
 });
 
 module.exports = mongoose.model("records", userSchema);

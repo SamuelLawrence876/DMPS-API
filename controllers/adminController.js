@@ -1,10 +1,10 @@
 const adminService = require("../service/adminService");
 const User = require("../models/user");
 
-const getAllAdmins = (req, res) => {
+const getAllAdmins = async (req, res) => {
   try {
-    const allAdmins = adminService.getAllAdmins();
-    res.send({ status: "pass", data: allAdmins });
+    const users = await User.find({});
+    res.status(200).json({ users });
   } catch (error) {
     res
       .status(error?.status || 500)
@@ -16,7 +16,6 @@ const createNewAdmin = async (req, res) => {
   const { firstName, lastName, email, hashrate, amount, createdAt, status } =
     req.body;
   try {
-    //create and store the new user
     const result = await User.create({
       firstName: firstName,
       lastName: lastName,
@@ -35,9 +34,52 @@ const createNewAdmin = async (req, res) => {
   }
 };
 
-const getOneAdmin = (req, res) => {};
-const updateOneAdmin = (req, res) => {};
-const deleteOneAdmin = (req, res) => {};
+const getOneAdmin = async (req, res) => {
+  const { adminId: _id } = req.params;
+  try {
+    const data = await User.findById({ _id });
+    console.log({ data });
+    if (data) res.status(200).json({ data });
+  } catch (error) {
+    res.send({ status: "fail", data: { error: error?.message || error } });
+  }
+};
+const updateOneAdmin = async (req, res) => {
+  const { adminId: _id } = req.params;
+  const { firstName, lastName, email, hashrate, amount, createdAt, status } =
+    req.body;
+  try {
+    const data = await User.findByIdAndUpdate(
+      { _id },
+      {
+        $set: {
+          firstName,
+          lastName,
+          email,
+          hashrate,
+          amount,
+          createdAt,
+          status,
+        },
+      }
+    );
+    console.log({ data });
+    if (data) res.status(200).json({ data });
+  } catch (error) {
+    res.send({ status: "fail", data: { error: error?.message || error } });
+  }
+};
+
+const deleteOneAdmin = async (req, res) => {
+  const { adminId: _id } = req.params;
+  const user = await User.findByIdAndDelete({ _id });
+  console.log("user deleted");
+  console.log({ user });
+  if (!user) {
+    return next(createCustomError(`No task with id : ${userID}`, 404));
+  }
+  res.status(200).json({ task: user });
+};
 
 module.exports = {
   getAllAdmins,
