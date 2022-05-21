@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const { auth } = require("express-oauth2-jwt-bearer");
 const adminRouter = require("./routes/admin/adminRoutes");
 const port = process.env.PORT || 5000;
+const notFound = require("./middleware/notFound.js");
 require("dotenv").config({ path: "./config.env" });
 
 // cors
@@ -17,7 +18,9 @@ app.use("/api/admin/", adminRouter);
 // app.get("/authorized", function (req, res) {
 //   res.send("Secured Resource");
 // });
+// middleware
 
+app.use(notFound);
 // config
 
 // get driver connection

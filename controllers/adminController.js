@@ -35,12 +35,19 @@ const createNewAdmin = async (req, res) => {
 };
 
 const getOneAdmin = async (req, res) => {
-  const { adminId: _id } = req.params;
   try {
-    const data = await User.findById({ _id });
-    console.log({ data });
-    if (data) res.status(200).json({ data });
+    const { adminId: _id } = req.params;
+    console.log({ _id });
+    const user = await User.findById(_id);
+    console.log("user found");
+    console.log(user);
+    if (user === null) {
+      return res.status(404).json({ message: "No user found" });
+    }
+    res.status(200).json({ user });
+    console.log({ user });
   } catch (error) {
+    res.status(500);
     res.send({ status: "fail", data: { error: error?.message || error } });
   }
 };
@@ -71,14 +78,19 @@ const updateOneAdmin = async (req, res) => {
 };
 
 const deleteOneAdmin = async (req, res) => {
-  const { adminId: _id } = req.params;
-  const user = await User.findByIdAndDelete({ _id });
-  console.log("user deleted");
-  console.log({ user });
-  if (!user) {
-    return next(createCustomError(`No task with id : ${userID}`, 404));
+  try {
+    const { adminId: _id } = req.params;
+    const user = await User.findByIdAndDelete({ _id });
+    console.log("user deleted");
+    console.log(user);
+    if (user === null) {
+      return res.status(404).json({ message: "No user found" });
+    }
+    res.status(200).json({ task: user });
+  } catch (error) {
+    res.status(500);
+    res.send({ status: 500, data: { error: error?.message || error } });
   }
-  res.status(200).json({ task: user });
 };
 
 module.exports = {
