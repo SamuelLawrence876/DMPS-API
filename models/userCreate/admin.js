@@ -17,6 +17,11 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  userType: {
+    type: Date,
+    immutable: true,
+    default: "admin",
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);
