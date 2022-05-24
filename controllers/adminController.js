@@ -1,5 +1,5 @@
 const adminService = require("../service/adminService");
-const User = require("../models/user");
+const User = require("../models/userCreate/user");
 
 const getAllAdmins = async (req, res) => {
   try {
