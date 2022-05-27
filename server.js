@@ -5,17 +5,29 @@ const bodyParser = require("body-parser");
 const { auth } = require("express-oauth2-jwt-bearer");
 const adminRouter = require("./routes/admin/adminRoutes");
 const productsRouter = require("./routes/products/productRouter");
+const userRouter = require("./routes/user/userRouter");
+const authRouter = require("./routes/auth/authRouter");
+const authenticateUser = require("./middleware/authentication");
 const port = process.env.PORT || 5000;
 const notFound = require("./middleware/notFound.js");
 require("dotenv").config({ path: "./config.env" });
 
-// cors
+// extra security packages
+
+// const helmet = require('helmet');
+// const cors = require('cors');
+// const xss = require('xss-clean');
+// const rateLimiter = require('express-rate-limit');
 
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
+
+// routes
+app.use("/api/auth/", authRouter);
 app.use("/api/admin/", adminRouter);
 app.use("/api/product/", productsRouter);
+app.use("/api/user/", authenticateUser, userRouter);
 
 // middleware
 

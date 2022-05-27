@@ -1,41 +1,39 @@
 const mongoose = require("mongoose");
-
-const userSchema = new mongoose.Schema({
+// const validator = require("validator");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const UserSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: [true, "user name must be provided"],
-    trim: true,
-    maxlength: [30, "name can not be more than 20 characters"],
+    // required: [true, "Please provide name"],
+    maxlength: 50,
+    minlength: 3,
+    default: "tom",
   },
   lastName: {
     type: String,
-    required: [true, "user must be provided"],
-    maxlength: [30, "name can not be more than 20 characters"],
-    trim: true,
+    // required: [true, "Please provide name"],
+    maxlength: 50,
+    minlength: 3,
+    default: "test",
   },
   email: {
     type: String,
-    required: [true, "email must be provided"],
-    trim: true,
-    maxlength: [30, "name can not be more than 20 characters"],
+    required: [true, "Please provide email"],
+    // validate: {
+    //   validator: validator.isEmail,
+    //   message: 'Please provide valid email',
+    // },
+    unique: true,
   },
-  status: {
+  // verificationToken: String,
+  password: {
     type: String,
-    // required: [true, "status must be provided"],
-    trim: true,
-  },
-  hashrate: {
-    type: Number,
-    // required: [true, "hashrate must be provided"],
-  },
-  amount: {
-    type: Number,
-    default: false,
-    // required: [true, "amount must be provided"],
+    required: [true, "Please provide password"],
+    minlength: 6,
   },
   createdAt: {
     type: Date,
-    immutable: true,
     default: Date.now(),
   },
   userType: {
@@ -43,6 +41,46 @@ const userSchema = new mongoose.Schema({
     immutable: true,
     default: "user",
   },
+  hashrate: {
+    type: Number,
+    default: 0,
+  },
+  status: {
+    type: Boolean,
+    default: false,
+  },
+  amount: {
+    type: Number,
+    default: 0,
+  },
 });
 
-module.exports = mongoose.model("records", userSchema);
+// UserSchema.pre("save", async function () {
+//   // console.log(this.modifiedPaths());
+//   // console.log(this.isModified('name'));
+//   if (!this.isModified("password")) return;
+//   const salt = await bcrypt.genSalt(10);
+//   this.password = await bcrypt.hash(this.password, salt);
+// });
+
+// UserSchema.methods.comparePassword = async function (canditatePassword) {
+//   const isMatch = await bcrypt.compare(canditatePassword, this.password);
+//   return isMatch;
+// };
+UserSchema.pre("save", async function () {
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+UserSchema.methods.createJWT = function () {
+  return jwt.sign({ userId: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_LIFETIME,
+  });
+};
+
+UserSchema.methods.comparePassword = async function (canditatePassword) {
+  const isMatch = await bcrypt.compare(canditatePassword, this.password);
+  return isMatch;
+};
+
+module.exports = mongoose.model("User", UserSchema);

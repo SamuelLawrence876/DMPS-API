@@ -1,4 +1,4 @@
-const Product = require("../models/store/product");
+const Product = require("../../models/store/product");
 
 const getAllProductsStatic = async (req, res) => {
   const products = await Product.find({ price: { $gt: 30 } })
