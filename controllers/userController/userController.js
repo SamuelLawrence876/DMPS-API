@@ -1,6 +1,13 @@
 const User = require("../../models/userCreate/user");
 
-//! this one
+const showCurrentUser = async (req, res) => {
+  try {
+    res.status(200).json({ user: req.user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const getAllUsers = async (req, res) => {
   console.log(req.user);
   try {
@@ -82,4 +89,5 @@ module.exports = {
   getUser,
   updateUser,
   deleteUser,
+  showCurrentUser,
 };

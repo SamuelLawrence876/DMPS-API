@@ -1,8 +1,13 @@
 const express = require("express");
 const userController = require("../../controllers/userController/userController");
 const router = express.Router();
-
-router.get("/", userController.getAllUsers);
+const {
+  authenticateUser,
+  authorizePermissions,
+} = require("../../middleware/authentication");
+// change to get user profile
+router.get("/", authenticateUser, userController.getAllUsers);
+router.get("/showUser", authenticateUser, userController.showCurrentUser);
 
 router.get("/:adminId", userController.getUser);
 
