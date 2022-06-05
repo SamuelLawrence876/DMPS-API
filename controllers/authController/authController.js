@@ -19,6 +19,7 @@ const register = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -68,10 +69,18 @@ const login = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+const showCurrentUser = async (req, res) => {
+  try {
+    res.status(200).json({ user: req.user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 module.exports = {
   register,
   login,
+  showCurrentUser,
   // logout,
   // forgotPassword,
   // resetPassword,
