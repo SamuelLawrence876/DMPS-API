@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const { auth } = require("express-oauth2-jwt-bearer");
 const adminRouter = require("./routes/admin/adminRoutes");
 const productsRouter = require("./routes/products/productRouter");
+const cloudRouter = require("./routes/products/cloudRouter");
 const port = process.env.PORT || 5000;
 const notFound = require("./middleware/notFound.js");
 require("dotenv").config({ path: "./config.env" });
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use("/api/admin/", adminRouter);
 app.use("/api/product/", productsRouter);
+app.use("/api/cloud/", cloudRouter);
 
 // middleware
 
